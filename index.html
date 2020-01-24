@@ -17,21 +17,35 @@ var ballY = 75;
 var ballSpeedX = 7;
 var ballSpeedY = 9
 
+var brick_w = 100;
+var brick_h = 50;
+var brick_count = 8;
+var brickGrid = new Array(brick_count);
+
 var paddle_width = 100;
 var paddle_thickness = 15;
 var paddle_distanceFromBottom = 60;
 var paddleX;
+
+var mouseX = 0;
+var mouseY = 0;
 
 
 function updateMousePos(e) {
 	var rect = canvas.getBoundingClientRect();
 	var root = document.documentElement;
 
-	var mouseX = e.clientX - rect.left - root.scrollLeft;
-	var mouseY = e.clientY - rect.top - root.scrollTop;
+	mouseX = e.clientX - rect.left - root.scrollLeft;
+	mouseY = e.clientY - rect.top - root.scrollTop;
 
 
 	paddleX = mouseX-paddle_width/2;
+}
+
+function brickReset() {
+	for(var i=0;i<brick_count;i++) {
+		brickGrid[i] = true;
+	}
 }
 
 window.onload = function() {
@@ -42,6 +56,8 @@ window.onload = function() {
 	setInterval(updateAll, 1000/framesPerSecond);
 
 	canvas.addEventListener('mousemove', updateMousePos)
+
+	brickReset();
 }
 
 function ballReset() {
@@ -82,15 +98,27 @@ function moveAll() {
 		var ballDistFromCenterOfPaddle = ballX - centerOfPaddleX;
 		ballSpeedX = ballDistFromCenterOfPaddle * 0.35;
 	}
+}
 
-
-
+function drawBricks() {
+	for (var i=0; i < brick_count; i++) {
+		if(brickGrid[i]) {
+			colorRect(brick_w*i,0, brick_w-2,brick_h, 'blue')
+		}
+	}
+		
 }
 
 function drawAll() {
-	colorRect(0,0, canvas.width,canvas.height, 'green')// Canvas background
+	colorRect(0,0, canvas.width,canvas.height, "#131")// Canvas background
+
 	colorCircle(ballX,ballY, 10, "white")// Ball
+
 	colorRect(paddleX,canvas.height-paddle_distanceFromBottom,  paddle_width, paddle_thickness, 'white') // Paddle
+
+	drawBricks();
+
+	colorText(mouseX+" : "+mouseY, mouseX,mouseY, "gold")
 }
 
 function updateAll() {
@@ -110,6 +138,10 @@ function colorCircle(centerX, centerY, radius, color) {
 	canvasContext.fill();
 }
 
+function colorText(showWords, textX,textY, fillColor) {
+	canvasContext.fillStyle = fillColor;
+	canvasContext.fillText( showWords, textX,textY)
+}
 
 	</script>
 </body>
