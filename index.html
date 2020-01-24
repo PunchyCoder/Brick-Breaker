@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<meta charset="utf-8" http-equiv="encoding">
+	<title>Brick Massacre</title>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<script type="text/javascript">
+
+var canvas, canvasContext;
+
+var ballX = 75;
+var ballY = 75;
+var ballSpeedX = 7;
+var ballSpeedY = 9
+
+var paddle_width = 100;
+var paddle_thickness = 15;
+var paddle_distanceFromBottom = 60;
+var paddleX;
+
+
+function updateMousePos(e) {
+	var rect = canvas.getBoundingClientRect();
+	var root = document.documentElement;
+
+	var mouseX = e.clientX - rect.left - root.scrollLeft;
+	var mouseY = e.clientY - rect.top - root.scrollTop;
+
+
+	paddleX = mouseX-paddle_width/2;
+}
+
+window.onload = function() {
+	canvas = document.getElementById('gameCanvas');
+	canvasContext = canvas.getContext('2d');
+
+	var framesPerSecond = 30;
+	setInterval(updateAll, 1000/framesPerSecond);
+
+	canvas.addEventListener('mousemove', updateMousePos)
+}
+
+function ballReset() {
+	ballX = canvas.width/2;
+	ballY = canvas.height/2;
+}
+
+function moveAll() {
+	ballX += ballSpeedX;
+	ballY += ballSpeedY;
+
+	if(ballX > canvas.width-10 || ballX < 10) {
+		ballSpeedX = -ballSpeedX;
+	}
+	if(ballY < 10) {
+		ballSpeedY = -ballSpeedY;
+	}
+
+	// LOSE A LIFE
+	if(ballY > canvas.height) {
+		ballReset();
+	}
+
+	// Paddle Ball COLLISION
+	var paddle_topEdgeY = canvas.height-paddle_distanceFromBottom;
+	var paddle_bottomEdgeY = paddle_topEdgeY + paddle_thickness;
+	var paddle_leftEdgeX = paddleX;
+	var paddle_rightEdgeX = paddleX + paddle_width;
+
+	if (ballY > paddle_topEdgeY && 		// ball is below top of paddle
+		ballY < paddle_bottomEdgeY &&	// ball is above bottom of paddle
+		ballX > paddle_leftEdgeX && 	// ball is right of left of paddle
+		ballX < paddle_rightEdgeX ) 	// ball is left of right of paddle
+	{
+		ballSpeedY = -ballSpeedY;
+
+		var centerOfPaddleX = paddleX + paddle_width/2;
+		var ballDistFromCenterOfPaddle = ballX - centerOfPaddleX;
+		ballSpeedX = ballDistFromCenterOfPaddle * 0.35;
+	}
+
+
+
+}
+
+function drawAll() {
+	colorRect(0,0, canvas.width,canvas.height, 'green')// Canvas background
+	colorCircle(ballX,ballY, 10, "white")// Ball
+	colorRect(paddleX,canvas.height-paddle_distanceFromBottom,  paddle_width, paddle_thickness, 'white') // Paddle
+}
+
+function updateAll() {
+	moveAll();
+	drawAll();
+}
+
+function colorRect(topLeftX,topLeftY, width, height, color) {
+	canvasContext.fillStyle = color;
+	canvasContext.fillRect(topLeftX,topLeftY, width,height);
+}
+
+function colorCircle(centerX, centerY, radius, color) {
+	canvasContext.fillStyle = color;
+	canvasContext.beginPath();
+	canvasContext.arc(centerX,centerY, radius, 0, Math.PI*2, true);
+	canvasContext.fill();
+}
+
+
+	</script>
+</body>
+</html>
