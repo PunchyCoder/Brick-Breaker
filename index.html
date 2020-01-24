@@ -19,8 +19,11 @@ var ballSpeedY = 9
 
 var brick_w = 100;
 var brick_h = 50;
-var brick_count = 8;
-var brickGrid = new Array(brick_count);
+var brick_gap = 2;
+
+var brickRows = 5;
+var brickCols = 5;
+var brickGrid = new Array(brickCols);
 
 var paddle_width = 100;
 var paddle_thickness = 15;
@@ -43,7 +46,7 @@ function updateMousePos(e) {
 }
 
 function brickReset() {
-	for(var i=0;i<brick_count;i++) {
+	for(var i=0;i<brickCols;i++) {
 		brickGrid[i] = true;
 	}
 }
@@ -101,10 +104,15 @@ function moveAll() {
 }
 
 function drawBricks() {
-	for (var i=0; i < brick_count; i++) {
-		if(brickGrid[i]) {
-			colorRect(brick_w*i,0, brick_w-2,brick_h, 'blue')
+	for (var row=0; row < brickRows; row++) {
+		for (var col=0; col < brickCols; col++) {
+			if(brickGrid[col]) {
+				colorRect( 
+					brick_w*col, brick_h*row,
+					brick_w-brick_gap, brick_h-brick_gap, 'blue')
+			}
 		}
+	
 	}
 		
 }
@@ -118,7 +126,9 @@ function drawAll() {
 
 	drawBricks();
 
-	colorText(mouseX+" : "+mouseY, mouseX,mouseY, "gold")
+	var brickCol = Math.floor(mouseX / brick_w);
+	var brickRow = Math.floor(mouseY / brick_h);
+	colorText(brickCol+" : "+brickRow, mouseX,mouseY, "gold")
 }
 
 function updateAll() {
